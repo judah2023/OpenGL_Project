@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "context.h"
+
 // 윈도우 프레임버퍼(창) 크기 변경 이벤트 콜백함수
 void OnFramebufferSizeChange(GLFWwindow * window, int width, int height);
 // 키보드 입력 이벤트 콜백
@@ -50,6 +52,14 @@ int main(int argc, const char** argv)
     auto glVersion = glGetString(GL_VERSION);
     SPDLOG_INFO("OpenGL context version : {}", (char*)glVersion);
 
+    auto context = Context::Create();
+    if (!context)
+    {
+        SPDLOG_INFO("failed to create context");
+        glfwTerminate();
+        return -1;
+    }
+
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
     glfwSetKeyCallback(window, OnKeyEvent);
@@ -58,10 +68,11 @@ int main(int argc, const char** argv)
     SPDLOG_INFO("Start main loop");
     while (!glfwWindowShouldClose(window)) 
     {
-        Render();
+        context->Render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    context.reset();
 
     glfwTerminate();
     return 0;
