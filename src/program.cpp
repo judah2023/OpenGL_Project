@@ -16,6 +16,11 @@ ProgramUPtr Program::Creaete(const std::vector<ShaderPtr> &shaders)
     return std::move(program);
 }
 
+void Program::Use() const
+{
+    glUseProgram(m_program);
+}
+
 bool Program::Link(const std::vector<ShaderPtr> &shaders)
 {
     m_program = glCreateProgram();

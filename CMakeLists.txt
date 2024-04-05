@@ -8,14 +8,15 @@ set(WINDOW_WIDTH 1280)
 set(WINDOW_HEIGHT 720)
 
 project(${PROJECT_NAME})
-add_executable( 
-${PROJECT_NAME}
-#[[   header          source      ]]
-                    src/main.cpp
-  src/common.h      src/common.cpp
-  src/shader.h      src/shader.cpp
-  src/program.h     src/program.cpp
-  src/context.h     src/context.cpp
+add_executable(${PROJECT_NAME}
+#[[   header                  source      ]]
+                            src/main.cpp
+  src/common.h              src/common.cpp
+  src/shader.h              src/shader.cpp
+  src/program.h             src/program.cpp
+  src/context.h             src/context.cpp
+  src/buffer.h              src/buffer.cpp
+  src/vertex_layout.h       src/vertex_layout.cpp
 )
 
 include(Dependency.cmake)

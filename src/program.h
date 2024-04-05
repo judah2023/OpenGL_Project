@@ -12,6 +12,7 @@ public:
 
     static ProgramUPtr Creaete(const std::vector<ShaderPtr>& shaders);
     uint32_t Get() const { return m_program; }
+    void Use() const;
 private:
     Program() {}
 
