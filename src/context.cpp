@@ -44,13 +44,12 @@ bool Context::Init()
     
     glClearColor(0.1f, 0.2f, 0.3f, 0.0f);
 
-    float vertices[] = {
-	    // first triangle
-        0.5f, 0.5f, 0.0f, // top right
-        0.5f, -0.5f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f, // top left
-    };
+float vertices[] = {
+    0.5f, 0.5f, 0.0f,       1.0f, 0.0f, 0.0f, // top right, red
+    0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f, // bottom right, green
+    -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 1.0f, // bottom left, blue
+    -0.5f, 0.5f, 0.0f,      1.0f, 1.0f, 0.0f, // top left, yellow
+};
 
     uint32_t indices[] = {
         0, 1, 3,    // first triangle
@@ -60,7 +59,8 @@ bool Context::Init()
     m_vao = VertexLayout::Create();
     m_vbo = Buffer::CreateWithData(GL_ARRAY_BUFFER, GL_STATIC_DRAW, vertices, sizeof(vertices));
 
-    m_vao->SetAttrib(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
+    m_vao->SetAttrib(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, nullptr);
+    m_vao->SetAttrib(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(sizeof(float) * 3));
 
     m_ebo = Buffer::CreateWithData(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, indices, sizeof(indices));
 
