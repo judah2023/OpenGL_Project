@@ -4,8 +4,8 @@ set(PROJECT_NAME opengl_project)
 set(CMAKE_CXX_STANDARD 17)
 
 set(WINDOW_NAME "Hello, OpenGL!")
-set(WINDOW_WIDTH 1280)
-set(WINDOW_HEIGHT 720)
+set(WINDOW_WIDTH 800)
+set(WINDOW_HEIGHT 600)
 
 project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
@@ -17,6 +17,8 @@ add_executable(${PROJECT_NAME}
   src/context.h             src/context.cpp
   src/buffer.h              src/buffer.cpp
   src/vertex_layout.h       src/vertex_layout.cpp
+  src/image.h               src/image.cpp
+  src/texture.h             src/texture.cpp
 )
 
 include(Dependency.cmake)
