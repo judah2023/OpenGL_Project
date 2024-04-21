@@ -8,6 +8,12 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #define LOG_BUFSIZE 1 << 10
 #define CLASS_PTR(className) \
 class className; \
