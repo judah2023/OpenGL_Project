@@ -27,6 +27,8 @@ private:
     bool Init();
     inline bool IsKeyPressed(GLFWwindow* wnd, int key);
 
+    void DrawCude();
+
     ProgramUPtr m_program;
 
     VertexLayoutUPtr m_vao;
@@ -48,6 +50,8 @@ private:
 
     int m_width{800};
     int m_height{600};
+
+    glm::vec4 m_clearColor {glm::vec4(0.1f, 0.2f, 0.3f, 0.0f)};
 
 };
 

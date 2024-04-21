@@ -1,6 +1,21 @@
 #include "context.h"
 
+#include <imgui.h>
+
 #include "image.h"
+
+std::vector<glm::vec3> cubePositions = {
+    glm::vec3( 0.0f, 0.0f, 0.0f),
+    glm::vec3( 2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3( 2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3( 1.3f, -2.0f, -2.5f),
+    glm::vec3( 1.5f, 2.0f, -2.5f),
+    glm::vec3( 1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f),
+};
 
 Context::~Context()
 {
@@ -17,78 +32,36 @@ ContextUPtr Context::Create()
 
 void Context::Render()
 {
+    if (ImGui::Begin("My first ImGui window")) {
+        ImGui::Text("This is first text...");
+    }
+    ImGui::End();
+
+    if (ImGui::Begin("UI Window"))
+    {
+        if (ImGui::ColorEdit4("Clear Color", glm::value_ptr(m_clearColor)));
+        {
+            glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+        }
+
+        ImGui::Separator();
+        ImGui::DragFloat3("Camera Pos", glm::value_ptr(m_cameraPos), 0.01f);
+        ImGui::DragFloat("Camera Yaw", &m_cameraYaw, 0.5f);
+        ImGui::DragFloat("Camera Pitch", &m_cameraPitch, 0.5f, -89.0f, 89.0f);
+        ImGui::Separator();
+        if (ImGui::Button("Reset Camera"))
+        {
+            m_cameraYaw = 0.0f;
+            m_cameraPitch = 0.0f;
+            m_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+        }
+    }
+    ImGui::End();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    //====================================================================================================
-    
-    std::vector<glm::vec3> cubePositions = {
-        glm::vec3( 0.0f, 0.0f, 0.0f),
-        glm::vec3( 2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f, 2.0f, -2.5f),
-        glm::vec3( 1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f),
-    };
-
-    m_cameraFront = 
-        glm::rotate(glm::mat4(1.0f), glm::radians(m_cameraYaw), glm::vec3(0.0f, 1.0f, 0.0f)) *
-        glm::rotate(glm::mat4(1.0f), glm::radians(m_cameraPitch), glm::vec3(1.0f, 0.0f, 0.0f)) *
-        glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-
-    float fov = 45.0f;
-    float aspect = m_width / (float)m_height;
-    float zNear = 0.01f;
-    float zFar = 100.0f;
-    auto projection = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
-    
-    // // 1
-    // float angle_Camera = glfwGetTime() * glm::pi<float>() * 0.5f;
-    // float x = sinf(angle_Camera) * 10.0f;
-    // float z = cosf(angle_Camera) * 10.0f;
-    // auto cameraPos = glm::vec3(x, 0.0f, z);
-    // auto cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    // auto cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    // auto cameraZ = glm::normalize(cameraPos - cameraTarget);
-    // auto cameraX = glm::normalize(glm::cross(cameraUp, cameraZ));
-    // auto cameraY = glm::cross(cameraZ, cameraX);
-    // auto cameraMat = glm::mat4(
-    //     glm::vec4(cameraX,0.0f),
-    //     glm::vec4(cameraY,0.0f),
-    //     glm::vec4(cameraZ,0.0f),
-    //     glm::vec4(cameraPos,0.0f)
-    // );
-    // auto view = glm::inverse(cameraMat);
-
-    // 2
-    auto view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
-
-    for (size_t i = 0; i < cubePositions.size(); i++)
-    {
-        auto& pos = cubePositions[i];
-        float angle = glfwGetTime() * 120.0f + 20.0f * i;
-        
-        // 1
-        // auto trans = glm::translate(glm::mat4(1.0f), pos);
-        // auto rot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.0f));
-        // auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
-        // auto model = trans * rot * scale;
-
-        // 2
-        auto model = glm::translate(glm::mat4(1.0f), pos);
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.0f));
-
-        auto transMat = projection * view * model;
-        m_program->SetUniform("transMat", transMat);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-    }
-
-    //====================================================================================================
-
+    DrawCude();
 }
 
 void Context::ProcessInput(GLFWwindow *wnd)
@@ -254,4 +227,63 @@ bool Context::Init()
 bool Context::IsKeyPressed(GLFWwindow *wnd, int key)
 {
     return glfwGetKey(wnd, key) == GLFW_PRESS;
+}
+
+void Context::DrawCude()
+{
+    //====================================================================================================
+ 
+    m_cameraFront = 
+        glm::rotate(glm::mat4(1.0f), glm::radians(m_cameraYaw), glm::vec3(0.0f, 1.0f, 0.0f)) *
+        glm::rotate(glm::mat4(1.0f), glm::radians(m_cameraPitch), glm::vec3(1.0f, 0.0f, 0.0f)) *
+        glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+    float fov = 45.0f;
+    float aspect = m_width / (float)m_height;
+    float zNear = 0.01f;
+    float zFar = 100.0f;
+    auto projection = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
+    
+    // // 1
+    // float angle_Camera = glfwGetTime() * glm::pi<float>() * 0.5f;
+    // float x = sinf(angle_Camera) * 10.0f;
+    // float z = cosf(angle_Camera) * 10.0f;
+    // auto cameraPos = glm::vec3(x, 0.0f, z);
+    // auto cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    // auto cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    // auto cameraZ = glm::normalize(cameraPos - cameraTarget);
+    // auto cameraX = glm::normalize(glm::cross(cameraUp, cameraZ));
+    // auto cameraY = glm::cross(cameraZ, cameraX);
+    // auto cameraMat = glm::mat4(
+    //     glm::vec4(cameraX,0.0f),
+    //     glm::vec4(cameraY,0.0f),
+    //     glm::vec4(cameraZ,0.0f),
+    //     glm::vec4(cameraPos,0.0f)
+    // );
+    // auto view = glm::inverse(cameraMat);
+
+    // 2
+    auto view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
+
+    for (size_t i = 0; i < cubePositions.size(); i++)
+    {
+        auto& pos = cubePositions[i];
+        float angle = glfwGetTime() * 120.0f + 20.0f * i;
+        
+        // 1
+        // auto trans = glm::translate(glm::mat4(1.0f), pos);
+        // auto rot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.0f));
+        // auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+        // auto model = trans * rot * scale;
+
+        // 2
+        auto model = glm::translate(glm::mat4(1.0f), pos);
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.0f));
+
+        auto transMat = projection * view * model;
+        m_program->SetUniform("transMat", transMat);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+    }
+
+    //====================================================================================================
 }
